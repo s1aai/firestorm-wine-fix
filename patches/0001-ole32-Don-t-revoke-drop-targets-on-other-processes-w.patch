@@ -1,0 +1,50 @@
+From 8d9d379bbd0534c3bb4c6c797a1f2c46544ae076 Mon Sep 17 00:00:00 2001
+From: s1aai <146364909+s1aai@users.noreply.github.com>
+Date: Sat, 3 Oct 2026 22:18:42 +0000
+Subject: [PATCH] ole32: Don't revoke drop targets on other processes' windows.
+
+RegisterDragDrop() already refuses windows that belong to another
+process with DRAGDROP_E_INVALIDHWND, but RevokeDragDrop() did not.
+It read the OleDropTargetInterface window property, which holds a
+pointer that is only valid in the owning process, and called
+IDropTarget::Release() on it, which crashed.
+
+wry (the webview layer of Tauri) enumerates the child windows of a
+WebView2 host and calls RevokeDragDrop() on each one, expecting
+DRAGDROP_E_INVALIDHWND for windows owned by msedgewebview2.exe.
+Under Wine this crashed the Firestorm launcher (Tauri 2 + WebView2)
+when it created its login window.
+---
+ dlls/ole32/ole2.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/dlls/ole32/ole2.c b/dlls/ole32/ole2.c
+index b37b5b0..dc615a1 100644
+--- a/dlls/ole32/ole2.c
++++ b/dlls/ole32/ole2.c
+@@ -618,6 +618,7 @@ HRESULT WINAPI RegisterDragDrop(HWND hwnd, LPDROPTARGET pDropTarget)
+  */
+ HRESULT WINAPI RevokeDragDrop(HWND hwnd)
+ {
++  DWORD pid = 0;
+   HANDLE map;
+   IStream *stream;
+   IDropTarget *drop_target;
+@@ -631,6 +632,14 @@ HRESULT WINAPI RevokeDragDrop(HWND hwnd)
+     return DRAGDROP_E_INVALIDHWND;
+   }
+ 
++  /* block revoke for other processes windows */
++  GetWindowThreadProcessId(hwnd, &pid);
++  if (pid != GetCurrentProcessId())
++  {
++    FIXME("revoke for another process windows is disabled\n");
++    return DRAGDROP_E_INVALIDHWND;
++  }
++
+   /* no registration data */
+   if (!(map = get_droptarget_handle(hwnd)))
+     return DRAGDROP_E_NOTREGISTERED;
+-- 
+2.56.0
+
