@@ -22,6 +22,30 @@ To play later, open **Firestorm Launcher** from your apps menu.
 
 You need about **120 GB of free disk space**. The game alone is about 115 GB.
 
+## Already have the game files?
+
+If someone gave you the game folder (for example, copied from a Windows PC), you can skip the big 115 GB download.
+
+**Step 1.** Do the 4 steps in [How to install](#how-to-install) first. When the launcher opens, **close it**.
+
+**Step 2.** Find the game folder you were given. It's the folder that has **`Wow.exe`** inside it. On Windows it is usually called **The War Within**.
+
+**Step 3.** Open your file manager. Go to your **Home** folder, then **Games** → **firestorm** → **drive_c**.
+
+**Step 4.** In **drive_c**, make a new folder called **`Firestorm`**. Spelling and capital F matter.
+
+**Step 5.** Move the game folder into that **Firestorm** folder. When you're done, this file should exist:
+
+```
+~/Games/firestorm/drive_c/Firestorm/The War Within/Wow.exe
+```
+
+> Moving is instant if the game is on the same drive. Copying 115 GB can take a long time; wait until it finishes.
+
+**Step 6.** Open **Firestorm Launcher** from your apps menu and log in. If it asks where the game is or where to install it, choose **`C:\Firestorm\The War Within`**. The launcher then checks the files and downloads only what's missing or out of date.
+
+If it starts downloading the whole game again, stop it, look for a button like **Locate**, **Browse** or **Change folder**, and choose `C:\Firestorm\The War Within`.
+
 ## Something went wrong?
 
 | What you see | What to do |
